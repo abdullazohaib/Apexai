@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ title }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --border: #2a2a3a;
+    --accent: #6c63ff;
+    --accent2: #ff6584;
+    --accent3: #43e97b;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --chatgpt: #10a37f;
+    --gemini: #4285f4;
+    --claude: #d97706;
+    --winner: #f59e0b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(108,99,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(108,99,255,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container { max-width: 1000px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+  /* Header */
+  header {
+    padding: 32px 24px 0;
+    text-align: center;
+  }
+
+  .logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: 600;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, #e8e8f0 30%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    margin-top: 10px;
+    font-size: 15px;
+    font-weight: 300;
+  }
+
+  nav { margin-top: 20px; }
+  nav a {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin: 0 16px;
+    transition: color 0.2s;
+  }
+  nav a:hover { color: var(--accent); }
+
+  /* Card */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 20px;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: rgba(108,99,255,0.3); }
+
+  .card-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Form */
+  .form-main { margin-top: 48px; }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  textarea, input[type="text"], input[type="file"] {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    padding: 14px 16px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    resize: vertical;
+    outline: none;
+  }
+
+  textarea:focus, input[type="text"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(108,99,255,0.12);
+  }
+
+  .question-area { font-size: 16px; min-height: 90px; }
+  .response-area { min-height: 140px; font-size: 14px; }
+
+  .responses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .model-block { }
+  .model-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .badge-chatgpt { background: rgba(16,163,127,0.15); color: var(--chatgpt); border: 1px solid rgba(16,163,127,0.3); }
+  .badge-gemini { background: rgba(66,133,244,0.15); color: var(--gemini); border: 1px solid rgba(66,133,244,0.3); }
+  .badge-claude { background: rgba(217,119,6,0.15); color: var(--claude); border: 1px solid rgba(217,119,6,0.3); }
+
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+  /* File upload */
+  .file-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  #file-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: var(--surface2);
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--muted);
+    transition: border-color 0.2s, color 0.2s;
+  }
+  #file-label:hover { border-color: var(--accent); color: var(--accent); }
+  #file-name { font-size: 12px; color: var(--muted); }
+  #file-input { display: none; }
+
+  /* Submit */
+  .btn-compare {
+    width: 100%;
+    padding: 16px;
+    background: var(--accent);
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-compare:hover {
+    background: #7c75ff;
+    box-shadow: 0 8px 32px rgba(108,99,255,0.4);
+  }
+  .btn-compare:active { transform: scale(0.99); }
+  .btn-compare:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Spinner */
+  .spinner {
+    display: none;
+    width: 20px; height: 20px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin: 0 auto;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Results */
+  #results { display: none; margin-top: 32px; animation: fadeUp 0.4s ease; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:none; } }
+
+  /* Winner banner */
+  .winner-banner {
+    background: linear-gradient(135deg, rgba(245,158,11,0.12), rgba(108,99,255,0.08));
+    border: 1px solid rgba(245,158,11,0.3);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .winner-banner::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--winner), var(--accent));
+  }
+  .winner-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--winner);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .winner-text {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    white-space: pre-wrap;
+  }
+
+  /* Score bars */
+  .scores-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 600px) { .scores-grid { grid-template-columns: 1fr; } }
+
+  .score-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    transition: border-color 0.2s;
+  }
+  .score-card.is-winner {
+    border-color: rgba(245,158,11,0.4);
+    background: rgba(245,158,11,0.05);
+  }
+  .score-model {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .score-total {
+    font-size: 32px;
+    font-weight: 600;
+    letter-spacing: -1px;
+  }
+  .score-bar-wrap {
+    margin-top: 12px;
+  }
+  .score-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .score-bar-label { font-size: 10px; color: var(--muted); width: 72px; flex-shrink: 0; }
+  .score-bar-track {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.8s cubic-bezier(0.16,1,0.3,1);
+  }
+  .score-bar-val { font-size: 10px; color: var(--muted); width: 34px; text-align: right; }
+
+  .crown { font-size: 18px; margin-left: 6px; }
+
+  /* Cache badge */
+  .cache-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: rgba(67,233,123,0.12);
+    color: var(--accent3);
+    border: 1px solid rgba(67,233,123,0.2);
+    margin-left: 10px;
+  }
+
+  .error-msg {
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 10px;
+    padding: 14px 18px;
+    color: #f87171;
+    font-size: 14px;
+    margin-top: 16px;
+    display: none;
+  }
+
+  footer {
+    text-align: center;
+    padding: 48px 0 32px;
+    color: var(--muted);
+    font-size: 12px;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="logo">▸ AI Toolkit</div>
+    <h1>Response Comparator<br>&amp; Synthesizer</h1>
+    <p class="subtitle">Compare ChatGPT, Gemini &amp; Claude — get one synthesized best answer</p>
+    <nav>
+      <a href="/">Compare</a>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/docs" target="_blank">API Docs</a>
+    </nav>
+  </header>
+
+  <main class="form-main">
+
+    <!-- Question -->
+    <div class="card">
+      <div class="card-title">01 · Your Question</div>
+      <textarea id="question" class="question-area" placeholder="What is quantum entanglement and why does it matter?"></textarea>
+
+      <div class="file-row" style="margin-top:14px;">
+        <label for="file-input" id="file-label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+          Attach file (optional)
+        </label>
+        <span id="file-name">No file chosen</span>
+        <input type="file" id="file-input" accept=".txt,.pdf,.md,.csv">
+      </div>
+    </div>
+
+    <!-- Responses -->
+    <div class="card">
+      <div class="card-title">02 · AI Responses</div>
+      <div class="responses-grid">
+        <div class="model-block">
+          <div class="model-badge badge-chatgpt"><span class="dot"></span>ChatGPT</div>
+          <textarea id="resp-chatgpt" class="response-area" placeholder="Paste ChatGPT's response here..."></textarea>
+        </div>
+        <div class="model-block">
+          <div class="model-badge badge-gemini"><span class="dot"></span>Gemini</div>
+          <textarea id="resp-gemini" class="response-area" placeholder="Paste Gemini's response here..."></textarea>
+        </div>
+        <div class="model-block">
+          <div class="model-badge badge-claude"><span class="dot"></span>Claude</div>
+          <textarea id="resp-claude" class="response-area" placeholder="Paste Claude's response here..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-compare" id="compare-btn" onclick="runCompare()">
+      <span id="btn-text">▶ &nbsp;Synthesize Best Answer</span>
+      <div class="spinner" id="spinner"></div>
+    </button>
+
+    <div class="error-msg" id="error-msg"></div>
+
+    <!-- Results -->
+    <div id="results">
+
+      <div class="winner-banner">
+        <div class="winner-label" id="winner-label">⚡ Synthesized Answer</div>
+        <div class="winner-text" id="final-answer"></div>
+      </div>
+
+      <div class="card-title" style="margin-bottom:14px;">Score Breakdown</div>
+      <div class="scores-grid" id="scores-grid"></div>
+
+    </div>
+
+  </main>
+
+  <footer>AI Response Comparator · Rule-Based Scoring Engine · Built with FastAPI</footer>
+
+</div>
+
+<script>
+  // File input label
+  document.getElementById('file-input').addEventListener('change', e => {
+    const f = e.target.files[0];
+    document.getElementById('file-name').textContent = f ? f.name : 'No file chosen';
+  });
+
+  async function runCompare() {
+    const question = document.getElementById('question').value.trim();
+    const chatgpt = document.getElementById('resp-chatgpt').value.trim();
+    const gemini = document.getElementById('resp-gemini').value.trim();
+    const claude = document.getElementById('resp-claude').value.trim();
+
+    if (!question || !chatgpt || !gemini || !claude) {
+      showError('Please fill in the question and all three AI responses.');
+      return;
+    }
+
+    setLoading(true);
+    hideError();
+    document.getElementById('results').style.display = 'none';
+
+    try {
+      const formData = new FormData();
+      formData.append('question', question);
+      formData.append('chatgpt', chatgpt);
+      formData.append('gemini', gemini);
+      formData.append('claude', claude);
+
+      const file = document.getElementById('file-input').files[0];
+      if (file) formData.append('file', file);
+
+      const res = await fetch('/api/v1/ask', { method: 'POST', body: formData });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.detail || 'Server error');
+      }
+
+      const data = await res.json();
+      renderResults(data);
+    } catch (e) {
+      showError(e.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function renderResults(data) {
+    const colors = { chatgpt: '#10a37f', gemini: '#4285f4', claude: '#d97706' };
+
+    // Winner banner
+    const cacheTag = data.from_cache
+      ? `<span class="cache-badge">⚡ Cached</span>`
+      : '';
+    document.getElementById('winner-label').innerHTML =
+      `⚡ Synthesized Answer — Winner: <strong>${data.winner.toUpperCase()}</strong> ${cacheTag}`;
+    document.getElementById('final-answer').textContent = data.final_answer;
+
+    // Score cards
+    const grid = document.getElementById('scores-grid');
+    grid.innerHTML = '';
+    const metrics = ['keyword_relevance','length_score','readability_score','cosine_similarity','factual_score'];
+    const metricLabels = ['Keywords','Length','Readability','Cosine','Factual'];
+
+    data.ranked.forEach(model => {
+      const score = data.scores[model];
+      const bd = data.breakdowns[model];
+      const isWinner = model === data.winner;
+      const color = colors[model];
+
+      const barsHtml = metrics.map((m, i) => {
+        const v = bd[m];
+        return `
+          <div class="score-bar-row">
+            <span class="score-bar-label">${metricLabels[i]}</span>
+            <div class="score-bar-track">
+              <div class="score-bar-fill" style="width:${(v*100).toFixed(1)}%;background:${color};opacity:0.8;"></div>
+            </div>
+            <span class="score-bar-val">${(v*100).toFixed(0)}%</span>
+          </div>`;
+      }).join('');
+
+      grid.innerHTML += `
+        <div class="score-card ${isWinner ? 'is-winner' : ''}">
+          <div class="score-model" style="color:${color}">${model}${isWinner ? '<span class="crown">👑</span>' : ''}</div>
+          <div class="score-total" style="color:${color}">${(score*100).toFixed(1)}<span style="font-size:16px;color:var(--muted)">%</span></div>
+          <div class="score-bar-wrap">${barsHtml}</div>
+        </div>`;
+    });
+
+    document.getElementById('results').style.display = 'block';
+    document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function setLoading(loading) {
+    const btn = document.getElementById('compare-btn');
+    const text = document.getElementById('btn-text');
+    const spin = document.getElementById('spinner');
+    btn.disabled = loading;
+    text.style.display = loading ? 'none' : 'inline';
+    spin.style.display = loading ? 'block' : 'none';
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('error-msg');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  function hideError() {
+    document.getElementById('error-msg').style.display = 'none';
+  }
+</script>
+</body>
+</html>

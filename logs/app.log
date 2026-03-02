@@ -1,0 +1,9 @@
+2026-03-02 16:13:28 | INFO     | ai_comparator | Starting AI Response Comparator & Synthesizer v1.0.0
+2026-03-02 16:13:28 | INFO     | ai_comparator | Database initialized
+2026-03-02 16:15:24 | INFO     | ai_comparator | Shutting down
+2026-03-02 16:15:29 | INFO     | ai_comparator | Starting AI Response Comparator & Synthesizer v1.0.0
+2026-03-02 16:15:29 | INFO     | ai_comparator | Database initialized
+2026-03-02 16:23:53 | INFO     | ai_comparator | Scoring complete | winner=gemini | scores={'chatgpt': 0.6097, 'gemini': 0.6937, 'claude': 0.621}
+2026-03-02 16:23:53 | INFO     | ai_comparator | Synthesis complete | winner=gemini | base_sentences=22 | novel_added=5
+2026-03-02 16:23:53 | INFO     | ai_comparator | Logged query id=1 from_cache=False
+2026-03-02 16:52:38 | INFO     | ai_comparator | Shutting down
