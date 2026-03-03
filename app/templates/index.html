@@ -440,6 +440,13 @@
       </div>
 
       <div class="card-title" style="margin-bottom:14px;">Score Breakdown</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6;">
+        <strong style="color:var(--text)">Keywords</strong> — TF-IDF relevance to your question &nbsp;·&nbsp;
+        <strong style="color:var(--text)">Length</strong> — Ideal answer length (80–350 words) &nbsp;·&nbsp;
+        <strong style="color:var(--text)">Readability</strong> — Flesch clarity score &nbsp;·&nbsp;
+        <strong style="color:var(--text)">Coverage</strong> — Breadth of topic vocabulary &nbsp;·&nbsp;
+        <strong style="color:var(--text)">Factual</strong> — Agreement with other responses
+      </p>
       <div class="scores-grid" id="scores-grid"></div>
 
     </div>
@@ -512,7 +519,7 @@
     const grid = document.getElementById('scores-grid');
     grid.innerHTML = '';
     const metrics = ['keyword_relevance','length_score','readability_score','cosine_similarity','factual_score'];
-    const metricLabels = ['Keywords','Length','Readability','Cosine','Factual'];
+    const metricLabels = ['Keywords','Length','Readability','Coverage','Factual'];
 
     data.ranked.forEach(model => {
       const score = data.scores[model];

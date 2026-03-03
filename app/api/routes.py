@@ -18,7 +18,7 @@ from app.api.schemas import (
 from app.core.cache import cache, make_cache_key
 from app.core.logger import logger
 from app.core.scorer import score_responses
-from app.core.synthesizer import synthesize
+from app.core.synthesizer import synthesize_with_question
 from app.db.models import QueryLog, get_db
 
 router = APIRouter()
@@ -170,8 +170,8 @@ async def _process(request: CompareRequest, db: AsyncSession) -> CompareResponse
     # Score
     scoring_result = score_responses(request.question, responses_dict)
 
-    # Synthesize
-    final_answer = synthesize(responses_dict, scoring_result)
+    # Synthesize — pass the question for relevance-guided sentence selection
+    final_answer = synthesize_with_question(request.question, responses_dict, scoring_result)
 
     breakdowns_out = {
         model: ScoreBreakdownOut(**bd.to_dict())
